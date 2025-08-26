@@ -73,7 +73,7 @@ if command -v melange &> /dev/null && command -v apko &> /dev/null; then
         size=$(docker images app-melange --format "table {{.Size}}" | tail -n 1)
         echo "📏 Tamanho: $size"
         echo "🔍 Executando scan de segurança..."
-        trivy image --quiet app-melange | head -20
+        trivy image --quiet app-melange:latest-amd64 | head -20
     else
         echo -e "${RED}❌ Imagem não foi criada. Verifique o build.${NC}"
     fi
