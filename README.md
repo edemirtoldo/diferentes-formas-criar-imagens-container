@@ -6,9 +6,9 @@ Este repositório demonstra **três abordagens diferentes** para criar imagens D
 
 | Projeto                   | Abordagem              | Tamanho | Segurança | Complexidade |
 | ------------------------- | ---------------------- | ------- | --------- | ------------ |
-| **01-build-convencional** | Dockerfile tradicional | ~1GB    | ⚠️ Baixa  | 🟢 Simples   |
-| **02-build-distroless**   | Chainguard Distroless  | ~100MB  | 🟡 Média  | 🟡 Moderada  |
-| **03-melange**            | Melange + Apko         | ~40MB   | 🟢 Alta   | 🔴 Avançada  |
+| **01-build-convencional** | Dockerfile tradicional | ~140MB  | ⚠️ Baixa  | 🟢 Simples   |
+| **02-build-distroless**   | Chainguard Distroless  | ~64MB   | 🟡 Média  | 🟡 Moderada  |
+| **03-melange**            | Melange + Apko         | ~42MB   | 🟢 Alta   | 🔴 Avançada  |
 
 ---
 
