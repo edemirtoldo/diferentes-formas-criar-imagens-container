@@ -33,7 +33,7 @@ Este repositório demonstra **três abordagens diferentes** para criar imagens D
 
 - ✅ **Simplicidade**: Dockerfile padrão, fácil de entender
 - ✅ **Compatibilidade**: Funciona em qualquer ambiente Docker
-- ❌ **Tamanho**: ~1GB (imagem completa do Ubuntu/Debian)
+- ❌ **Tamanho**: ~140MB (imagem completa do Ubuntu/Debian)
 - ❌ **Segurança**: Muitos pacotes desnecessários
 - ❌ **Vulnerabilidades**: Sistema operacional completo
 
@@ -65,7 +65,7 @@ docker run -p 5000:5000 app-tradicional
 ### Características
 
 - ✅ **Segurança**: Sem shell, sem pacotes desnecessários
-- ✅ **Tamanho**: ~100MB (redução de 90%)
+- ✅ **Tamanho**: ~64MB (redução de 54%)
 - ✅ **Vulnerabilidades**: Muito reduzidas
 - ✅ **Atualizações**: Imagens mantidas pela Chainguard
 - 🟡 **Complexidade**: Requer conhecimento de distroless
