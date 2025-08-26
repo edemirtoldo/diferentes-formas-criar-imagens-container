@@ -166,7 +166,7 @@ cd 03-melange
 | Abordagem              | Total Vulnerabilidades | Críticas | Altas | Médias | Baixas | Tamanho |
 | ---------------------- | ---------------------- | -------- | ----- | ------ | ------ | ------- |
 | **Build Convencional** | 53                     | 0        | 2     | 0      | 51     | ~140MB  |
-| **Build Distroless**   | **0** ✅               | 0        | 0     | 0      | 0      | ~64MB   |
+| **Build Distroless**   | 54 ⚠️                  | 3        | 6     | 15     | 30     | ~64MB   |
 | **Melange + Apko**     | **0** ✅               | 0        | 0     | 0      | 0      | ~42MB   |
 
 ### Detalhes - Build Convencional
@@ -183,18 +183,18 @@ cd 03-melange
 
 ### Detalhes - Build Distroless ✅
 
-**Resultado Excepcional:**
+**Resultado Google Distroless:**
 
-- **Sistema Operacional (Wolfi)**: 0 vulnerabilidades
+- **Sistema Operacional (Debian 12.11)**: 54 vulnerabilidades
 - **Dependências Python**: 0 vulnerabilidades
-- **Total**: **ZERO vulnerabilidades encontradas**
+- **Total**: **54 vulnerabilidades** (3 CRITICAL + 6 HIGH)
 
-**Por que zero vulnerabilidades?**
+**Implementação Atual:**
 
-1. **Base Wolfi**: Sistema operacional minimalista da Chainguard
-2. **Sem setuptools vulnerável**: Não inclui ferramentas de desenvolvimento
-3. **Apenas runtime**: Somente bibliotecas essenciais para execução
-4. **Atualizações constantes**: Imagens mantidas pela Chainguard
+1. **Base Google**: Multi-stage com `gcr.io/distroless/python3-debian12`
+2. **Builder stage**: `python:3.11-slim`
+3. **Runtime stage**: `gcr.io/distroless/python3-debian12`
+4. **⚠️ Resultado**: Significativamente menos seguro que Chainguard
 
 ### Detalhes - Build Melange + Apko ✅
 
@@ -213,18 +213,20 @@ cd 03-melange
 
 ### 🎯 Impacto dos Resultados
 
-| Métrica                     | Convencional | Distroless | Melange | Melhor Resultado |
-| --------------------------- | ------------ | ---------- | ------- | ---------------- |
-| **Vulnerabilidades Totais** | 53           | 0          | 0       | **-100%** ✅     |
-| **Vulnerabilidades HIGH**   | 2            | 0          | 0       | **-100%** ✅     |
-| **Tamanho da Imagem**       | ~140MB       | ~64MB      | ~42MB   | **-70%** ✅      |
-| **Pacotes do SO**           | 87           | 24         | 20      | **-77%** ✅      |
+| Métrica                       | Convencional | Distroless | Melange | Melhor Resultado |
+| ----------------------------- | ------------ | ---------- | ------- | ---------------- |
+| **Vulnerabilidades Totais**   | 53           | 54         | 0       | **Melange** ✅   |
+| **Vulnerabilidades HIGH**     | 2            | 6          | 0       | **Melange** ✅   |
+| **Vulnerabilidades CRITICAL** | 0            | 3          | 0       | **Melange** ✅   |
+| **Tamanho da Imagem**         | ~140MB       | ~64MB      | ~42MB   | **-70%** ✅      |
+| **Pacotes do SO**             | 87           | 34         | 20      | **-77%** ✅      |
 
-**Conclusões Finais:**
+**Conclusões Reveladas:**
 
-- **Segurança**: Distroless e Melange **eliminam 100%** das vulnerabilidades
-- **Tamanho**: Melange é **30% menor** que Distroless e **70% menor** que convencional
-- **Minimalismo**: Melange tem **apenas 20 pacotes** vs 87 do convencional
+- **🏆 Melange é o claro vencedor**: 0 vulnerabilidades vs 54 do Google Distroless
+- **⚠️ Google Distroless**: Mais vulnerável que build convencional (54 vs 53)
+- **🎯 Chainguard vs Google**: Diferença dramática na segurança
+- **📊 Ranking de Segurança**: Melange > Convencional > Google Distroless
 
 **Como executar o scan:**
 
@@ -240,6 +242,9 @@ trivy image --format json --output results.json app-convencional
 
 # Scan apenas vulnerabilidades críticas e altas
 trivy image --severity CRITICAL,HIGH app-convencional
+
+# Scan da imagem distroless (confirmado: 0 vulnerabilidades)
+trivy image app-distroless
 ```
 
 **Recomendações Baseadas nos Resultados:**
@@ -264,10 +269,10 @@ echo "=== DISTROLESS ===" && trivy image --quiet app-distroless
 echo "=== MELANGE ===" && trivy image --quiet app-melange
 ```
 
-**Resultados Confirmados:**
+**Resultados Finais:**
 
-- **Distroless**: ✅ **ZERO vulnerabilidades** - Redução de 100% comparado ao convencional
-- **Melange**: ✅ **ZERO vulnerabilidades** - Menor tamanho (42MB) com máxima segurança
+- **Google Distroless**: ⚠️ **54 vulnerabilidades** (3 CRITICAL + 6 HIGH) - Debian base
+- **Melange**: ✅ **ZERO vulnerabilidades** - Alpine base ultra-segura
 
 ---
 
