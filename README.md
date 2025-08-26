@@ -167,7 +167,7 @@ cd 03-melange
 | ---------------------- | ---------------------- | -------- | ----- | ------ | ------ | ------- |
 | **Build Convencional** | 53                     | 0        | 2     | 0      | 51     | ~140MB  |
 | **Build Distroless**   | **0** ✅               | 0        | 0     | 0      | 0      | ~64MB   |
-| **Melange + Apko**     | _Em análise_           | -        | -     | -      | -      | ~42MB   |
+| **Melange + Apko**     | **0** ✅               | 0        | 0     | 0      | 0      | ~42MB   |
 
 ### Detalhes - Build Convencional
 
@@ -196,16 +196,35 @@ cd 03-melange
 3. **Apenas runtime**: Somente bibliotecas essenciais para execução
 4. **Atualizações constantes**: Imagens mantidas pela Chainguard
 
+### Detalhes - Build Melange + Apko ✅
+
+**Resultado Excepcional:**
+
+- **Sistema Operacional (Alpine Edge)**: 0 vulnerabilidades
+- **Dependências Python**: 0 vulnerabilidades (integradas no build)
+- **Total**: **ZERO vulnerabilidades encontradas**
+
+**Por que zero vulnerabilidades?**
+
+1. **Alpine Edge minimalista**: Base ultra-enxuta com apenas 20 pacotes
+2. **Build customizado**: Melange compila apenas o necessário
+3. **Sem arquivos de desenvolvimento**: Apko gera imagem final limpa
+4. **Controle total**: Cada componente é explicitamente definido
+
 ### 🎯 Impacto dos Resultados
 
-| Métrica                     | Convencional | Distroless | Melhoria     |
-| --------------------------- | ------------ | ---------- | ------------ |
-| **Vulnerabilidades Totais** | 53           | 0          | **-100%** ✅ |
-| **Vulnerabilidades HIGH**   | 2            | 0          | **-100%** ✅ |
-| **Tamanho da Imagem**       | ~140MB       | ~64MB      | **-54%** ✅  |
-| **Pacotes do SO**           | 87           | 24         | **-72%** ✅  |
+| Métrica                     | Convencional | Distroless | Melange | Melhor Resultado |
+| --------------------------- | ------------ | ---------- | ------- | ---------------- |
+| **Vulnerabilidades Totais** | 53           | 0          | 0       | **-100%** ✅     |
+| **Vulnerabilidades HIGH**   | 2            | 0          | 0       | **-100%** ✅     |
+| **Tamanho da Imagem**       | ~140MB       | ~64MB      | ~42MB   | **-70%** ✅      |
+| **Pacotes do SO**           | 87           | 24         | 20      | **-77%** ✅      |
 
-**Conclusão**: A abordagem distroless elimina **completamente** as vulnerabilidades mantendo funcionalidade total!
+**Conclusões Finais:**
+
+- **Segurança**: Distroless e Melange **eliminam 100%** das vulnerabilidades
+- **Tamanho**: Melange é **30% menor** que Distroless e **70% menor** que convencional
+- **Minimalismo**: Melange tem **apenas 20 pacotes** vs 87 do convencional
 
 **Como executar o scan:**
 
@@ -223,11 +242,12 @@ trivy image --format json --output results.json app-convencional
 trivy image --severity CRITICAL,HIGH app-convencional
 ```
 
-**Recomendações:**
+**Recomendações Baseadas nos Resultados:**
 
-1. **Atualizar setuptools**: Versão atual 65.5.1 → Recomendado 78.1.1+
-2. **Considerar imagem base mais segura**: Alpine ou Distroless
-3. **Implementar scanning contínuo** no pipeline CI/CD
+1. **❌ Evitar build convencional** para produção (53 vulnerabilidades)
+2. **✅ Usar Distroless** para facilidade + segurança (0 vulnerabilidades, 64MB)
+3. **🏆 Usar Melange** para máxima otimização (0 vulnerabilidades, 42MB)
+4. **Implementar scanning contínuo** no pipeline CI/CD com Trivy
 
 ### Próximos Testes
 
@@ -247,7 +267,7 @@ echo "=== MELANGE ===" && trivy image --quiet app-melange
 **Resultados Confirmados:**
 
 - **Distroless**: ✅ **ZERO vulnerabilidades** - Redução de 100% comparado ao convencional
-- **Melange**: _Aguardando teste_ - Expectativa de resultado similar ou melhor
+- **Melange**: ✅ **ZERO vulnerabilidades** - Menor tamanho (42MB) com máxima segurança
 
 ---
 
