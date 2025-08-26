@@ -1,0 +1,39 @@
+# melange.yaml - configuração para build do pacote Python
+package:
+  name: app-melange
+  version: 0.1.0
+  epoch: 0
+  description: "Aplicação Flask para geração de senhas"
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      license: MIT
+  dependencies:
+    runtime:
+      - python3
+
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+      - https://dl-cdn.alpinelinux.org/alpine/edge/community
+    packages:
+      - python3
+      - py3-pip
+      - py3-setuptools
+      - py3-wheel
+      - bash
+      - coreutils
+
+pipeline:
+  - name: Copy application files
+    runs: |
+      mkdir -p ${{targets.destdir}}/app
+      cp -r src/* ${{targets.destdir}}/app/
+
+  - name: Install Python dependencies
+    runs: |
+      cd ${{targets.destdir}}/app
+      pip3 install --break-system-packages --target ${{targets.destdir}}/app/lib/python3.12/site-packages -r requirements.txt

@@ -1,0 +1,34 @@
+# Arquivos de build do Melange
+output/
+packages/
+sbom-*.spdx.json
+melange.rsa
+melange.rsa.pub
+
+# Arquivos de build do Apko
+*.tar
+*.tar.gz
+
+# Arquivos temporários
+*.tmp
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema
+.DS_Store
+Thumbs.db 
