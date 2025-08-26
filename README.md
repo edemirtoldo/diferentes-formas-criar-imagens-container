@@ -1,6 +1,14 @@
 # 🐳 Comparativo de Builds Docker: Tradicional vs Distroless vs Melange+Apko
 
-Este repositório demonstra **três abordagens diferentes** para criar imagens Docker de uma aplicação Flask simples que gera senhas aleatórias, comparando segurança, tamanho e complexidade.
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Security](https://img.shields.io/badge/Security-Trivy-4B275F?style=for-the-badge&logo=aqua&logoColor=white)](https://trivy.dev/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+
+> **Estudo comparativo de segurança e performance** entre diferentes estratégias de containerização
+
+Este repositório demonstra **três abordagens diferentes** para criar imagens Docker de uma aplicação Flask simples que gera senhas aleatórias, comparando **segurança, tamanho e complexidade** com análises detalhadas usando Trivy.
 
 ## 📋 Visão Geral dos Projetos
 
@@ -9,6 +17,27 @@ Este repositório demonstra **três abordagens diferentes** para criar imagens D
 | **01-build-convencional** | Dockerfile tradicional | ~140MB  | ⚠️ Baixa  | 🟢 Simples   |
 | **02-build-distroless**   | Chainguard Distroless  | ~64MB   | 🟡 Média  | 🟡 Moderada  |
 | **03-melange**            | Melange + Apko         | ~42MB   | 🟢 Alta   | 🔴 Avançada  |
+
+---
+
+## 🚀 Quick Start
+
+### Pré-requisitos
+
+- [Docker](https://docs.docker.com/get-docker/) 20.10+
+- [Trivy](https://trivy.dev/v0.65/getting-started/installation/) (para análise de segurança)
+- [Melange](https://github.com/chainguard-dev/melange) e [Apko](https://github.com/chainguard-dev/apko) (apenas para abordagem 03)
+
+### Instalação Rápida do Trivy
+
+```bash
+# Linux/macOS
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+
+# Ou via package manager
+brew install trivy  # macOS
+apt-get install trivy  # Ubuntu/Debian
+```
 
 ---
 
@@ -275,9 +304,21 @@ echo "=== MELANGE ===" && trivy image --quiet app-melange
 
 ---
 
-## 🚀 Testando Todas as Abordagens
+## 📦 Exemplos Prontos para Uso
 
-Para comparar todas as três abordagens:
+### Script de Comparação Automática
+
+Execute o script `compare-all.sh` para testar todas as abordagens automaticamente:
+
+```bash
+# Tornar executável e executar
+chmod +x compare-all.sh
+./compare-all.sh
+```
+
+### Comandos Individuais
+
+Para comparar todas as três abordagens manualmente:
 
 ```bash
 # 1. Build Convencional
@@ -305,6 +346,60 @@ docker images | grep app-
 
 ---
 
+## 🛠️ Desenvolvimento
+
+### Estrutura de Arquivos
+
+```
+.
+├── 01-build-convencional/
+│   ├── Dockerfile              # Build tradicional
+│   ├── src/
+│   │   ├── app.py             # Aplicação Flask
+│   │   └── requirements.txt   # Dependências
+│   └── README.md              # Documentação específica
+├── 02-build-distroless/
+│   ├── Dockerfile              # Build Chainguard
+│   └── src/                   # Mesma aplicação
+├── 03-melange/
+│   ├── melange.yaml           # Configuração Melange
+│   ├── apko.yaml              # Configuração Apko
+│   ├── build-oficial.sh       # Script de build
+│   └── src/                   # Mesma aplicação
+├── compare-all.sh             # Script de comparação
+└── README.md                  # Este arquivo
+```
+
+### Testando Modificações
+
+1. **Modificar a aplicação**: Edite `src/app.py` em qualquer diretório
+2. **Rebuild**: Execute `docker build -t <tag> .` no diretório
+3. **Testar**: `docker run -p 5000:5000 <tag>`
+4. **Analisar**: `trivy image <tag>`
+
+### Adicionando Nova Abordagem
+
+1. Crie um novo diretório `04-nova-abordagem/`
+2. Adicione Dockerfile e documentação
+3. Atualize `compare-all.sh`
+4. Documente no README principal
+
+---
+
 ## 🤝 Contribuindo
 
-Sinta-se à vontade para abrir issues ou pull requests para melhorar os exemplos!
+Contribuições são bem-vindas! Por favor:
+
+1. **Fork** o repositório
+2. **Crie** uma branch para sua feature (`git checkout -b feature/nova-abordagem`)
+3. **Commit** suas mudanças (`git commit -am 'Adiciona nova abordagem X'`)
+4. **Push** para a branch (`git push origin feature/nova-abordagem`)
+5. **Abra** um Pull Request
+
+### Tipos de Contribuições
+
+- 🐛 **Bug fixes** em Dockerfiles
+- 📚 **Melhorias na documentação**
+- 🔒 **Novas análises de segurança**
+- 🚀 **Novas abordagens de build**
+- 📊 **Benchmarks e comparações**
