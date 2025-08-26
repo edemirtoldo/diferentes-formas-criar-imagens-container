@@ -55,6 +55,20 @@ Acesse:
 - **Aplicação**: http://localhost:5000
 - **Gerar senha**: http://localhost:5000/senha
 
+## Como analisar a imagem com Trivy
+
+Se você já tem o Trivy instalado no seu Linux, pode analisar a imagem Docker para encontrar vulnerabilidades:
+
+```bash
+trivy image app-melange:latest-amd64
+```
+
+Para exibir apenas vulnerabilidades críticas:
+
+```bash
+trivy image --severity CRITICAL app-melange:latest-amd64
+```
+
 ## 🔧 Configurações
 
 ### melange.yaml
@@ -156,7 +170,7 @@ docker inspect app-melange:latest-amd64 | jq '.[0].RootFS.Layers'
 
 ```
 IMAGE          CREATED        CREATED BY      SIZE
-app-melange    3 days ago     apko           41.5MB
+app-melange    3 days ago     apko           42.3MB
 <missing>      3 days ago                     0B
 ```
 
@@ -175,7 +189,7 @@ python         2 weeks ago    /bin/sh -c #(nop) CMD ["python3"]    0B
 | Métrica              | Imagem Tradicional | Melange + Apko |
 | -------------------- | ------------------ | -------------- |
 | **Vulnerabilidades** | 200+               | 0              |
-| **Tamanho**          | ~1GB               | ~40MB          |
+| **Tamanho**          | ~140MB             | ~42MB          |
 | **Camadas**          | 10+                | 1              |
 | **Shell**            | ✅ Presente        | ❌ Ausente     |
 | **SBOM**             | ❌ Manual          | ✅ Automático  |
