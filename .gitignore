@@ -1,0 +1,41 @@
+# Arquivos de build e temporários
+*.tar
+*.rsa
+*.rsa.pub
+sbom-*.spdx.json
+packages/
+
+# Logs
+*.log
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# IDEs - configurações pessoais (manter settings.json do projeto)
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Docker
+.dockerignore
+
+# Outros
+.env
+.env.local
+.env.*.local
