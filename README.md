@@ -98,7 +98,7 @@ docker run -p 5000:5000 app-distroless
 ### Características
 
 - ✅ **Máxima Segurança**: SBOM automático, assinatura de pacotes
-- ✅ **Menor Tamanho**: ~40MB (uma única camada)
+- ✅ **Menor Tamanho**: ~42MB (uma única camada)
 - ✅ **Reproduzível**: Builds idênticos sempre
 - ✅ **Auditável**: Rastreabilidade completa
 - ✅ **Performance**: Startup mais rápido
