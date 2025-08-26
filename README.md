@@ -159,6 +159,72 @@ cd 03-melange
 
 ---
 
+## 🔒 Análise de Segurança com Trivy
+
+### Resultados do Scan de Vulnerabilidades
+
+| Abordagem              | Total Vulnerabilidades | Críticas | Altas | Médias | Baixas | Tamanho |
+| ---------------------- | ---------------------- | -------- | ----- | ------ | ------ | ------- |
+| **Build Convencional** | 53                     | 0        | 2     | 0      | 51     | ~140MB  |
+| **Build Distroless**   | _Em análise_           | -        | -     | -      | -      | ~64MB   |
+| **Melange + Apko**     | _Em análise_           | -        | -     | -      | -      | ~42MB   |
+
+### Detalhes - Build Convencional
+
+**Vulnerabilidades por Categoria:**
+
+- **Sistema Operacional (Debian 13.0)**: 51 vulnerabilidades LOW
+- **Dependências Python**: 2 vulnerabilidades HIGH
+
+**Principais Vulnerabilidades HIGH:**
+
+- `CVE-2024-6345` - setuptools: Remote code execution via download functions
+- `CVE-2025-47273` - setuptools: Path Traversal Vulnerability
+
+**Como executar o scan:**
+
+```bash
+# Instalar Trivy (se não tiver)
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+
+# Scan da imagem convencional
+trivy image app-convencional
+
+# Scan com formato JSON para análise detalhada
+trivy image --format json --output results.json app-convencional
+
+# Scan apenas vulnerabilidades críticas e altas
+trivy image --severity CRITICAL,HIGH app-convencional
+```
+
+**Recomendações:**
+
+1. **Atualizar setuptools**: Versão atual 65.5.1 → Recomendado 78.1.1+
+2. **Considerar imagem base mais segura**: Alpine ou Distroless
+3. **Implementar scanning contínuo** no pipeline CI/CD
+
+### Próximos Testes
+
+Para completar a análise comparativa, execute:
+
+```bash
+# Scan das outras abordagens
+trivy image app-distroless
+trivy image app-melange  # ou nome da imagem gerada pelo Apko
+
+# Comparação lado a lado
+echo "=== CONVENCIONAL ===" && trivy image --quiet app-convencional
+echo "=== DISTROLESS ===" && trivy image --quiet app-distroless
+echo "=== MELANGE ===" && trivy image --quiet app-melange
+```
+
+**Expectativa dos Resultados:**
+
+- **Distroless**: Redução significativa de vulnerabilidades do SO
+- **Melange**: Mínimas vulnerabilidades, apenas dependências essenciais
+
+---
+
 ## 🚀 Testando Todas as Abordagens
 
 Para comparar todas as três abordagens:
