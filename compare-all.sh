@@ -59,12 +59,29 @@ build_and_analyze "01-build-convencional" "Build Convencional" "app-convencional
 # Build 2: Distroless
 build_and_analyze "02-build-distroless" "Build Distroless" "app-distroless"
 
-# Build 3: Melange (se disponível)
+# Build 3: Melange (processo especial)
+echo -e "\n${BLUE}📁 Processando: Build Melange${NC}"
+echo "----------------------------------------"
+
 if command -v melange &> /dev/null && command -v apko &> /dev/null; then
-    build_and_analyze "03-melange" "Build Melange" "app-melange"
+    cd 03-melange
+    echo "🔨 Building imagem com Melange + Apko..."
+    measure_time ./build-oficial.sh
+    
+    # Verificar se a imagem foi criada
+    if docker images | grep -q "app-melange"; then
+        size=$(docker images app-melange --format "table {{.Size}}" | tail -n 1)
+        echo "📏 Tamanho: $size"
+        echo "🔍 Executando scan de segurança..."
+        trivy image --quiet app-melange | head -20
+    else
+        echo -e "${RED}❌ Imagem não foi criada. Verifique o build.${NC}"
+    fi
+    cd ..
 else
-    echo -e "\n${YELLOW}⚠️  Melange/Apko não encontrados. Pulando build 03.${NC}"
+    echo -e "${YELLOW}⚠️  Melange/Apko não encontrados. Pulando build 03.${NC}"
     echo "   Instale: https://github.com/chainguard-dev/melange"
+    echo "   Ou execute manualmente: cd 03-melange && ./build-oficial.sh"
 fi
 
 # Comparação final
