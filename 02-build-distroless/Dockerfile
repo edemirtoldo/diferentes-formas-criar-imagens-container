@@ -1,7 +1,7 @@
 # =========================
 # Stage 1: Builder
 # =========================
-FROM cgr.dev/chainguard/python:latest-dev AS builder
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
@@ -14,10 +14,11 @@ COPY src/requirements.txt .
 # Instala dependências em /app/deps
 RUN pip install --target=/app/deps --no-cache-dir -r requirements.txt
 
+
 # =========================
-# Stage 2: Chainguard Runtime
+# Stage 2: Distroless Runtime
 # =========================
-FROM cgr.dev/chainguard/python:latest
+FROM gcr.io/distroless/python3-debian12
 
 WORKDIR /app
 
@@ -27,6 +28,6 @@ COPY --from=builder /app /app
 # Define PYTHONPATH
 ENV PYTHONPATH=/app/deps
 
-# Comando padrão
-CMD ["/app/app.py"]
+# CMD no distroless precisa ser apenas o programa/script
+CMD ["app.py"]
 
