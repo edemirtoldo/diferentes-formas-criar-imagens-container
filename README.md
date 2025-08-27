@@ -230,9 +230,12 @@ cd 03-melange
 | Aspecto         | Trivy                | Docker Scout              |
 | --------------- | -------------------- | ------------------------- |
 | **Escopo**      | Todas as severidades | HIGH+ por padrão          |
-| **Total CVEs**  | 53 (convencional)    | 2 (convencional)          |
+| **Total CVEs**  | 53 (convencional)    | 2 HIGH + 22 LOW/MED\*     |
 | **Foco**        | Análise completa     | Vulnerabilidades críticas |
 | **Performance** | Mais rápido          | Integração Docker         |
+| **Comparação**  | Não nativa           | Excelente (compare)       |
+
+\*_Nota: Scout mostra 24 vulnerabilidades totais na comparação (2H + 1M + 21L)_
 
 ### Detalhes - Build Convencional
 
@@ -747,6 +750,40 @@ docker images | grep app-
 2. Adicione Dockerfile e documentação
 3. Atualize `compare-all.sh`
 4. Documente no README principal
+
+---
+
+## 🎯 Principais Descobertas do Projeto
+
+### ✅ **Confirmações Importantes:**
+
+1. **Distroless e Melange são igualmente seguros**: Ambos têm ZERO vulnerabilidades HIGH/CRITICAL
+2. **Melange é o mais otimizado**: 42.3MB vs 64.3MB (Distroless) vs 140MB (Convencional)
+3. **Setuptools é o problema**: As 2 vulnerabilidades HIGH estão no setuptools 65.5.1
+4. **Wolfi é ultra-seguro**: Base Chainguard elimina todas as vulnerabilidades do SO
+5. **Alpine é minimalista**: Melange com apenas 36 pacotes vs 134 do convencional
+
+### 🔍 **Insights das Ferramentas:**
+
+- **Trivy**: Melhor para análise completa (53 CVEs encontrados)
+- **Docker Scout**: Melhor para foco em críticos (2 HIGH + comparações)
+- **Ambas concordam**: Nas vulnerabilidades que realmente importam
+- **Complementares**: Use as duas para cobertura máxima
+
+### 📊 **Dados Finais Confirmados:**
+
+| Métrica                   | Convencional | Distroless | Melange    | Vencedor        |
+| ------------------------- | ------------ | ---------- | ---------- | --------------- |
+| **Tamanho**               | 140MB        | 64.3MB     | **42.3MB** | 🏆 Melange      |
+| **Pacotes**               | 134          | 62         | **36**     | 🏆 Melange      |
+| **Vulnerabilidades HIGH** | 2            | **0**      | **0**      | 🏆 Empate       |
+| **Complexidade**          | Baixa        | Média      | Alta       | 🏆 Convencional |
+
+### 🎯 **Recomendação Final:**
+
+- **🟢 Desenvolvimento**: Build Convencional (simplicidade)
+- **🟡 Produção Padrão**: Build Distroless (segurança + facilidade)
+- **🔴 Produção Crítica**: Build Melange (máxima otimização + segurança)
 
 ---
 
