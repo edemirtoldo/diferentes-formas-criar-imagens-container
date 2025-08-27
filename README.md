@@ -12,11 +12,11 @@ Este repositório demonstra **três abordagens diferentes** para criar imagens D
 
 ## 📋 Visão Geral dos Projetos
 
-| Projeto                   | Abordagem              | Tamanho | Segurança | Complexidade |
-| ------------------------- | ---------------------- | ------- | --------- | ------------ |
-| **01-build-convencional** | Dockerfile tradicional | ~140MB  | ⚠️ Baixa  | 🟢 Simples   |
-| **02-build-distroless**   | Chainguard Distroless  | ~64MB   | 🟡 Média  | 🟡 Moderada  |
-| **03-melange**            | Melange + Apko         | ~42MB   | 🟢 Alta   | 🔴 Avançada  |
+| Projeto                   | Abordagem              | Tamanho  | Segurança  | Complexidade | Docker Scout   |
+| ------------------------- | ---------------------- | -------- | ---------- | ------------ | -------------- |
+| **01-build-convencional** | Dockerfile tradicional | 59MB     | ⚠️ 23 CVEs | 🟢 Simples   | 134 pacotes    |
+| **02-build-distroless**   | Chainguard Distroless  | 27MB     | ✅ 0 CVEs  | 🟡 Moderada  | 62 pacotes     |
+| **03-melange**            | Melange + Apko         | **18MB** | ✅ 0 CVEs  | 🔴 Avançada  | **36 pacotes** |
 
 ---
 
@@ -213,7 +213,7 @@ cd 03-melange
 | ---------------------- | ---------------------- | -------- | ----- | ------ | ------ | -------- | ------- |
 | **Build Convencional** | 23                     | 0        | 2     | 1      | 20     | 59MB     | 134     |
 | **Build Distroless**   | **0** ✅               | 0        | 0     | 0      | 0      | **27MB** | 62      |
-| **Melange + Apko**     | **TBD** 🔄             | TBD      | TBD   | TBD    | TBD    | TBD      | TBD     |
+| **Melange + Apko**     | **0** ✅               | 0        | 0     | 0      | 0      | **18MB** | 36      |
 
 ### Detalhes - Build Convencional
 
@@ -270,20 +270,21 @@ cd 03-melange
 
 #### Docker Scout Results (Confirmado)
 
-| Métrica                     | Convencional | Distroless  | Melange | Melhor Resultado |
-| --------------------------- | ------------ | ----------- | ------- | ---------------- |
-| **Vulnerabilidades Totais** | 23           | **0** ✅    | TBD     | **-100%** ✅     |
-| **Vulnerabilidades HIGH**   | 2            | **0** ✅    | TBD     | **-100%** ✅     |
-| **Tamanho da Imagem**       | 59MB         | **27MB** ✅ | TBD     | **-54%** ✅      |
-| **Pacotes Totais**          | 134          | **62** ✅   | TBD     | **-54%** ✅      |
+| Métrica                     | Convencional | Distroless | Melange     | Melhor Resultado |
+| --------------------------- | ------------ | ---------- | ----------- | ---------------- |
+| **Vulnerabilidades Totais** | 23           | **0** ✅   | **0** ✅    | **-100%** ✅     |
+| **Vulnerabilidades HIGH**   | 2            | **0** ✅   | **0** ✅    | **-100%** ✅     |
+| **Tamanho da Imagem**       | 59MB         | 27MB       | **18MB** ✅ | **-69%** ✅      |
+| **Pacotes Totais**          | 134          | 62         | **36** ✅   | **-73%** ✅      |
 
 **Conclusões Finais:**
 
-- **🏆 Distroless confirmado**: ZERO vulnerabilidades em ambas as ferramentas ✅
-- **🎯 Chainguard é superior**: Base Wolfi ultra-segura comprovada
-- **📊 Ranking atualizado**: Distroless = Melange > Convencional (confirmado)
-- **✅ Objetivo alcançado**: Distroless elimina 100% das vulnerabilidades
-- **🚀 Performance superior**: 54% menor em tamanho e pacotes
+- **🏆 Empate na segurança**: Distroless e Melange = ZERO vulnerabilidades ✅
+- **🥇 Melange é o campeão**: Menor tamanho (18MB) e menos pacotes (36)
+- **🎯 Ambas são superiores**: Chainguard (Wolfi) e Alpine ultra-seguros
+- **📊 Ranking final**: Melange > Distroless > Convencional
+- **✅ Objetivo alcançado**: 100% das vulnerabilidades eliminadas
+- **🚀 Performance excepcional**: Melange 69% menor que convencional
 - **🔒 Segurança máxima**: Confirmada por Trivy e Docker Scout
 
 **Como executar o scan:**
@@ -473,7 +474,7 @@ jobs:
 | -------------------- | -------- | -------- | ----- | ------ | ------ | -------- | ------- |
 | **app-convencional** | 23       | 0        | 2     | 1      | 20     | 59MB     | 134     |
 | **app-distroless**   | **0** ✅ | 0        | 0     | 0      | 0      | **27MB** | 62      |
-| **app-melange**      | TBD      | TBD      | TBD   | TBD    | TBD    | TBD      | TBD     |
+| **app-melange**      | **0** ✅ | 0        | 0     | 0      | 0      | **18MB** | 36      |
 
 #### Detalhes - Build Convencional (Docker Scout)
 
@@ -550,6 +551,41 @@ jobs:
 - Use **Trivy** para análise detalhada e CI/CD pipelines
 - Use **Docker Scout** para análise rápida e comparações
 - Use **ambos** para máxima cobertura de segurança
+
+#### Detalhes - Build Melange + Apko (Docker Scout) 🏆
+
+**Resultado Excepcional - CAMPEÃO:**
+
+- **Sistema Operacional (Alpine Edge)**: 0 vulnerabilidades
+- **Dependências Python**: 0 vulnerabilidades integradas
+- **Total de Pacotes**: 36 (vs 134 do convencional, 62 do distroless)
+- **Tamanho**: 18MB (vs 59MB do convencional, 27MB do distroless)
+- **Status**: **ZERO vulnerabilidades detectadas** ✅
+
+**🏆 Vantagens do Campeão:**
+
+1. **Menor Tamanho**: 18MB - 69% menor que convencional, 33% menor que distroless
+2. **Menos Pacotes**: 36 pacotes - 73% menos que convencional, 42% menos que distroless
+3. **Segurança Máxima**: Nenhuma vulnerabilidade encontrada
+4. **Base Alpine**: Sistema ultra-minimalista e seguro
+5. **Build Customizado**: Apenas componentes essenciais incluídos
+
+**📊 Comparação Final - Melange vs Todos:**
+
+| Métrica              | Convencional | Distroless | **Melange** | Vantagem Melange       |
+| -------------------- | ------------ | ---------- | ----------- | ---------------------- |
+| **Vulnerabilidades** | 23           | 0          | **0** ✅    | Empate ✅              |
+| **Tamanho**          | 59MB         | 27MB       | **18MB** ✅ | **-33%** vs Distroless |
+| **Pacotes**          | 134          | 62         | **36** ✅   | **-42%** vs Distroless |
+| **Complexidade**     | Baixa        | Média      | Alta        | Requer expertise       |
+
+**🎯 Quando Usar Melange:**
+
+- Aplicações críticas de produção
+- Compliance rigoroso (SBOM, assinatura)
+- Máxima otimização de recursos
+- Supply chain security é prioridade
+- Equipe com expertise em ferramentas Chainguard
 
 ### Comandos de Teste Rápido
 
