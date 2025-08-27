@@ -81,8 +81,8 @@ apt-get install trivy  # Ubuntu/Debian
 
 ```bash
 cd 01-build-convencional
-docker build -t app-tradicional .
-docker run -p 5000:5000 app-tradicional
+docker build -t app-convencional .
+docker run -p 5000:5000 app-convencional
 ```
 
 ---
@@ -322,7 +322,7 @@ Para comparar todas as três abordagens manualmente:
 
 ```bash
 # 1. Build Convencional
-cd 01-build-convencional && docker build -t app-tradicional . && cd ..
+cd 01-build-convencional && docker build -t app-convencional . && cd ..
 
 # 2. Build Distroless
 cd 02-build-distroless && docker build -t app-distroless . && cd ..
