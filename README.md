@@ -199,11 +199,21 @@ cd 03-melange
 
 ### Resultados do Scan de Vulnerabilidades
 
+#### Trivy Results
+
 | Abordagem              | Total Vulnerabilidades | Críticas | Altas | Médias | Baixas | Tamanho |
 | ---------------------- | ---------------------- | -------- | ----- | ------ | ------ | ------- |
 | **Build Convencional** | 53                     | 0        | 2     | 0      | 51     | ~140MB  |
 | **Build Distroless**   | **0** ✅               | 0        | 0     | 0      | 0      | ~64MB   |
 | **Melange + Apko**     | **0** ✅               | 0        | 0     | 0      | 0      | ~42MB   |
+
+#### Docker Scout Results
+
+| Abordagem              | Total Vulnerabilidades | Críticas | Altas | Médias | Baixas | Tamanho | Pacotes |
+| ---------------------- | ---------------------- | -------- | ----- | ------ | ------ | ------- | ------- |
+| **Build Convencional** | 23                     | 0        | 2     | 1      | 20     | 59MB    | 134     |
+| **Build Distroless**   | **TBD** 🔄             | TBD      | TBD   | TBD    | TBD    | TBD     | TBD     |
+| **Melange + Apko**     | **TBD** 🔄             | TBD      | TBD   | TBD    | TBD    | TBD     | TBD     |
 
 ### Detalhes - Build Convencional
 
@@ -444,15 +454,61 @@ jobs:
           exit-code: true
 ```
 
-### Resultados Esperados
+### Resultados Reais do Docker Scout
 
-Com base nos testes com Trivy, esperamos que o Docker Scout confirme:
+| Imagem               | Total | Críticas | Altas | Médias | Baixas | Tamanho | Pacotes |
+| -------------------- | ----- | -------- | ----- | ------ | ------ | ------- | ------- |
+| **app-convencional** | 23    | 0        | 2     | 1      | 20     | 59MB    | 134     |
+| **app-distroless**   | TBD   | TBD      | TBD   | TBD    | TBD    | TBD     | TBD     |
+| **app-melange**      | TBD   | TBD      | TBD   | TBD    | TBD    | TBD     | TBD     |
 
-| Imagem               | Vulnerabilidades Scout | Recomendações                 |
-| -------------------- | ---------------------- | ----------------------------- |
-| **app-convencional** | ~50+ vulnerabilidades  | Migrar para imagem distroless |
-| **app-distroless**   | 0-2 vulnerabilidades   | Manter atualizada             |
-| **app-melange**      | 0 vulnerabilidades     | Configuração ideal ✅         |
+#### Detalhes - Build Convencional (Docker Scout)
+
+**Principais Vulnerabilidades Encontradas:**
+
+**🚨 HIGH (2 vulnerabilidades):**
+
+- `CVE-2025-47273` - setuptools: Path Traversal (CVSS 7.7)
+- `CVE-2024-6345` - setuptools: Code Injection (CVSS 7.5)
+
+**🟡 MEDIUM (1 vulnerabilidade):**
+
+- `CVE-2025-45582` - tar: Vulnerabilidade não corrigida
+
+**⚪ LOW (20 vulnerabilidades):**
+
+- glibc: 7 vulnerabilidades (CVE-2019-9192, CVE-2019-1010025, etc.)
+- systemd: 4 vulnerabilidades (CVE-2023-31439, CVE-2023-31438, etc.)
+- coreutils: 2 vulnerabilidades (CVE-2025-5278, CVE-2017-18018)
+- Outras: perl, util-linux, openssl, shadow, sqlite3, apt
+
+**📊 Comparação Scout vs Trivy:**
+
+| Ferramenta       | Total | Críticas | Altas | Médias | Baixas | Observações               |
+| ---------------- | ----- | -------- | ----- | ------ | ------ | ------------------------- |
+| **Trivy**        | 53    | 0        | 2     | 0      | 51     | Mais vulnerabilidades LOW |
+| **Docker Scout** | 23    | 0        | 2     | 1      | 20     | Análise mais focada       |
+
+**Diferenças Notáveis:**
+
+- Scout encontrou 1 vulnerabilidade MEDIUM que Trivy classificou como LOW
+- Scout tem base de dados mais atualizada (detectou CVE-2025-\*)
+- Ambos concordam nas 2 vulnerabilidades HIGH do setuptools
+- Scout analisa menos pacotes mas com maior precisão
+
+**🎯 Insights das Ferramentas:**
+
+1. **Trivy é mais abrangente**: Detecta mais vulnerabilidades (53 vs 23)
+2. **Scout é mais preciso**: Foca em vulnerabilidades mais relevantes
+3. **Scout tem dados mais recentes**: CVE-2025-\* detectados primeiro
+4. **Ambos são complementares**: Usar os dois oferece cobertura completa
+5. **Scout integra melhor**: Comandos nativos do Docker CLI
+
+**📋 Recomendação de Uso:**
+
+- Use **Trivy** para análise detalhada e CI/CD pipelines
+- Use **Docker Scout** para análise rápida e comparações
+- Use **ambos** para máxima cobertura de segurança
 
 ### Comandos de Teste Rápido
 
@@ -465,7 +521,30 @@ for image in app-convencional app-distroless app-melange; do
 done
 
 # Comparação em cadeia
-docker scout compare app-convencional --to app-distroless --to app-melange
+docker scout compare app-convencional --to app-distroless
+
+# Análise completa com ambas as ferramentas
+./security-analysis.sh
+```
+
+**🔄 Próximos Testes Sugeridos:**
+
+Para completar a análise comparativa, execute:
+
+```bash
+# 1. Construir app-distroless
+cd 02-build-distroless
+docker build -t app-distroless .
+docker scout cves app-distroless
+
+# 2. Construir app-melange
+cd 03-melange
+./build-oficial.sh
+# Após o build, teste a imagem gerada
+
+# 3. Comparação completa
+docker scout compare app-convencional --to app-distroless
+docker scout recommendations app-convencional
 ```
 
 ---
