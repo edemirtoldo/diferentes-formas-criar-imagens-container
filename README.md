@@ -209,11 +209,11 @@ cd 03-melange
 
 #### Docker Scout Results
 
-| Abordagem              | Total Vulnerabilidades | Críticas | Altas | Médias | Baixas | Tamanho | Pacotes |
-| ---------------------- | ---------------------- | -------- | ----- | ------ | ------ | ------- | ------- |
-| **Build Convencional** | 23                     | 0        | 2     | 1      | 20     | 59MB    | 134     |
-| **Build Distroless**   | **TBD** 🔄             | TBD      | TBD   | TBD    | TBD    | TBD     | TBD     |
-| **Melange + Apko**     | **TBD** 🔄             | TBD      | TBD   | TBD    | TBD    | TBD     | TBD     |
+| Abordagem              | Total Vulnerabilidades | Críticas | Altas | Médias | Baixas | Tamanho  | Pacotes |
+| ---------------------- | ---------------------- | -------- | ----- | ------ | ------ | -------- | ------- |
+| **Build Convencional** | 23                     | 0        | 2     | 1      | 20     | 59MB     | 134     |
+| **Build Distroless**   | **0** ✅               | 0        | 0     | 0      | 0      | **27MB** | 62      |
+| **Melange + Apko**     | **TBD** 🔄             | TBD      | TBD   | TBD    | TBD    | TBD      | TBD     |
 
 ### Detalhes - Build Convencional
 
@@ -259,6 +259,8 @@ cd 03-melange
 
 ### 🎯 Impacto dos Resultados
 
+#### Trivy Results
+
 | Métrica                     | Convencional | Distroless | Melange | Melhor Resultado |
 | --------------------------- | ------------ | ---------- | ------- | ---------------- |
 | **Vulnerabilidades Totais** | 53           | 0          | 0       | **-100%** ✅     |
@@ -266,12 +268,23 @@ cd 03-melange
 | **Tamanho da Imagem**       | ~140MB       | ~64MB      | ~42MB   | **-70%** ✅      |
 | **Pacotes do SO**           | 87           | 24         | 20      | **-77%** ✅      |
 
+#### Docker Scout Results (Confirmado)
+
+| Métrica                     | Convencional | Distroless  | Melange | Melhor Resultado |
+| --------------------------- | ------------ | ----------- | ------- | ---------------- |
+| **Vulnerabilidades Totais** | 23           | **0** ✅    | TBD     | **-100%** ✅     |
+| **Vulnerabilidades HIGH**   | 2            | **0** ✅    | TBD     | **-100%** ✅     |
+| **Tamanho da Imagem**       | 59MB         | **27MB** ✅ | TBD     | **-54%** ✅      |
+| **Pacotes Totais**          | 134          | **62** ✅   | TBD     | **-54%** ✅      |
+
 **Conclusões Finais:**
 
-- **🏆 Empate na segurança**: Distroless e Melange eliminam 100% das vulnerabilidades
-- **🎯 Chainguard é superior**: Wolfi base ultra-segura
-- **📊 Ranking correto**: Distroless = Melange > Convencional
-- **✅ Objetivo alcançado**: Distroless agora tem menos vulnerabilidades que convencional
+- **🏆 Distroless confirmado**: ZERO vulnerabilidades em ambas as ferramentas ✅
+- **🎯 Chainguard é superior**: Base Wolfi ultra-segura comprovada
+- **📊 Ranking atualizado**: Distroless = Melange > Convencional (confirmado)
+- **✅ Objetivo alcançado**: Distroless elimina 100% das vulnerabilidades
+- **🚀 Performance superior**: 54% menor em tamanho e pacotes
+- **🔒 Segurança máxima**: Confirmada por Trivy e Docker Scout
 
 **Como executar o scan:**
 
@@ -456,11 +469,11 @@ jobs:
 
 ### Resultados Reais do Docker Scout
 
-| Imagem               | Total | Críticas | Altas | Médias | Baixas | Tamanho | Pacotes |
-| -------------------- | ----- | -------- | ----- | ------ | ------ | ------- | ------- |
-| **app-convencional** | 23    | 0        | 2     | 1      | 20     | 59MB    | 134     |
-| **app-distroless**   | TBD   | TBD      | TBD   | TBD    | TBD    | TBD     | TBD     |
-| **app-melange**      | TBD   | TBD      | TBD   | TBD    | TBD    | TBD     | TBD     |
+| Imagem               | Total    | Críticas | Altas | Médias | Baixas | Tamanho  | Pacotes |
+| -------------------- | -------- | -------- | ----- | ------ | ------ | -------- | ------- |
+| **app-convencional** | 23       | 0        | 2     | 1      | 20     | 59MB     | 134     |
+| **app-distroless**   | **0** ✅ | 0        | 0     | 0      | 0      | **27MB** | 62      |
+| **app-melange**      | TBD      | TBD      | TBD   | TBD    | TBD    | TBD      | TBD     |
 
 #### Detalhes - Build Convencional (Docker Scout)
 
@@ -501,8 +514,36 @@ jobs:
 1. **Trivy é mais abrangente**: Detecta mais vulnerabilidades (53 vs 23)
 2. **Scout é mais preciso**: Foca em vulnerabilidades mais relevantes
 3. **Scout tem dados mais recentes**: CVE-2025-\* detectados primeiro
-4. **Ambos são complementares**: Usar os dois oferece cobertura completa
+4. **Ambos concordam no essencial**: Distroless = 0 vulnerabilidades ✅
 5. **Scout integra melhor**: Comandos nativos do Docker CLI
+6. **Distroless é superior**: Confirmado por ambas as ferramentas
+
+#### Detalhes - Build Distroless (Docker Scout) ✅
+
+**Resultado Excepcional:**
+
+- **Sistema Operacional (Wolfi)**: 0 vulnerabilidades
+- **Dependências Python**: 0 vulnerabilidades
+- **Total de Pacotes**: 62 (vs 134 do convencional)
+- **Tamanho**: 27MB (vs 59MB do convencional)
+- **Status**: **ZERO vulnerabilidades detectadas** ✅
+
+**🏆 Vantagens Confirmadas:**
+
+1. **Segurança Máxima**: Nenhuma vulnerabilidade encontrada
+2. **Tamanho Otimizado**: 54% menor que o build convencional (27MB vs 59MB)
+3. **Menos Pacotes**: 54% menos pacotes (62 vs 134)
+4. **Base Wolfi**: Sistema operacional ultra-seguro da Chainguard
+5. **Sem Shell**: Superfície de ataque mínima
+
+**📊 Comparação Distroless vs Convencional:**
+
+| Métrica                   | Convencional | Distroless | Melhoria     |
+| ------------------------- | ------------ | ---------- | ------------ |
+| **Vulnerabilidades**      | 23           | 0          | **-100%** ✅ |
+| **Tamanho**               | 59MB         | 27MB       | **-54%** ✅  |
+| **Pacotes**               | 134          | 62         | **-54%** ✅  |
+| **Vulnerabilidades HIGH** | 2            | 0          | **-100%** ✅ |
 
 **📋 Recomendação de Uso:**
 
