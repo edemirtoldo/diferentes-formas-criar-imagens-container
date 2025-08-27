@@ -47,7 +47,7 @@ fi
 echo -e "${GREEN}✅ Pré-requisitos verificados${NC}"
 
 # Array de imagens para testar
-IMAGES=("app-convencional" "app-distroless" "app-melange")
+IMAGES=("app-convencional" "app-distroless" "app-melange:latest-amd64")
 
 # Construir imagens se necessário
 print_header "📦 Construindo Imagens"
@@ -105,9 +105,9 @@ if [ "$SCOUT_AVAILABLE" = true ]; then
         docker scout compare app-convencional --to app-distroless
     fi
     
-    if docker image inspect "app-distroless" >/dev/null 2>&1 && docker image inspect "app-melange" >/dev/null 2>&1; then
+    if docker image inspect "app-distroless" >/dev/null 2>&1 && docker image inspect "app-melange:latest-amd64" >/dev/null 2>&1; then
         echo -e "\n${YELLOW}⚖️  Comparando app-distroless vs app-melange:${NC}"
-        docker scout compare app-distroless --to app-melange
+        docker scout compare app-distroless --to app-melange:latest-amd64
     fi
 fi
 
