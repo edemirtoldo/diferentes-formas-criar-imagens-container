@@ -24,19 +24,26 @@ Este repositório demonstra **três abordagens diferentes** para criar imagens D
 
 ### Pré-requisitos
 
-- [Docker](https://docs.docker.com/get-docker/) 20.10+
+- [Docker](https://docs.docker.com/get-docker/) 20.10+ (inclui Docker Scout)
 - [Trivy](https://trivy.dev/v0.65/getting-started/installation/) (para análise de segurança)
+- [Docker Scout](https://docs.docker.com/scout/) (análise complementar)
 - [Melange](https://github.com/chainguard-dev/melange) e [Apko](https://github.com/chainguard-dev/apko) (apenas para abordagem 03)
 
-### Instalação Rápida do Trivy
+### Instalação Rápida das Ferramentas
 
 ```bash
-# Linux/macOS
+# Trivy - Linux/macOS
 curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
-# Ou via package manager
+# Trivy via package manager
 brew install trivy  # macOS
 apt-get install trivy  # Ubuntu/Debian
+
+# Docker Scout (já incluído no Docker 24.0+)
+docker scout --help
+
+# Docker Scout CLI standalone (opcional)
+curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
 ```
 
 ---
@@ -188,7 +195,7 @@ cd 03-melange
 
 ---
 
-## 🔒 Análise de Segurança com Trivy
+## 🔒 Análise de Segurança com Trivy e Docker Scout
 
 ### Resultados do Scan de Vulnerabilidades
 
@@ -304,7 +311,176 @@ echo "=== MELANGE ===" && trivy image --quiet app-melange
 
 ---
 
+## 🛡️ Análise Complementar com Docker Scout
+
+O **Docker Scout** oferece análises mais detalhadas e integração nativa com o ecossistema Docker, complementando perfeitamente o Trivy.
+
+### Instalação do Docker Scout
+
+```bash
+# Docker Scout já vem integrado no Docker Desktop
+# Para CLI standalone:
+curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
+
+# Ou via Docker:
+docker scout --help
+```
+
+### Comandos de Análise
+
+#### Análise Básica de Vulnerabilidades
+
+```bash
+# Scan básico da imagem
+docker scout cves app-convencional
+docker scout cves app-distroless
+docker scout cves app-melange
+
+# Scan com detalhes completos
+docker scout cves --details app-convencional
+
+# Apenas vulnerabilidades críticas e altas
+docker scout cves --only-severity critical,high app-convencional
+```
+
+#### Comparação Entre Imagens
+
+```bash
+# Comparar duas imagens diretamente
+docker scout compare app-convencional --to app-distroless
+
+# Comparar com imagem base
+docker scout compare app-convencional --to python:3.11-slim
+
+# Ver diferenças em formato JSON
+docker scout compare app-convencional --to app-distroless --format json
+```
+
+#### Análise de Recomendações
+
+```bash
+# Recomendações de atualização
+docker scout recommendations app-convencional
+
+# Análise de supply chain
+docker scout sbom app-convencional
+
+# Verificar políticas de segurança
+docker scout policy app-convencional
+```
+
+### Vantagens do Docker Scout vs Trivy
+
+| Recurso                   | Docker Scout   | Trivy | Observações                           |
+| ------------------------- | -------------- | ----- | ------------------------------------- |
+| **Integração Docker**     | ✅ Nativa      | 🟡    | Scout integrado ao Docker CLI         |
+| **Comparação de Imagens** | ✅ Avançada    | ❌    | Scout permite comparação direta       |
+| **Recomendações**         | ✅ Inteligente | 🟡    | Scout sugere atualizações específicas |
+| **SBOM Generation**       | ✅ Completo    | ✅    | Ambos geram SBOM detalhado            |
+| **Base de Dados**         | Docker         | Multi | Scout usa dados do Docker Hub         |
+| **Performance**           | 🟡 Moderada    | ✅    | Trivy é mais rápido                   |
+| **Formato de Saída**      | JSON/Texto     | Multi | Trivy tem mais formatos               |
+
+### Exemplo de Análise Completa
+
+```bash
+#!/bin/bash
+# Script de análise completa com Docker Scout
+
+echo "🔍 Análise Docker Scout - Comparativo de Segurança"
+echo "=================================================="
+
+# Build das imagens (se necessário)
+echo "📦 Construindo imagens..."
+cd 01-build-convencional && docker build -t app-convencional . && cd ..
+cd 02-build-distroless && docker build -t app-distroless . && cd ..
+
+echo ""
+echo "🛡️ Análise de Vulnerabilidades:"
+echo "--------------------------------"
+
+# Análise individual
+echo "📊 App Convencional:"
+docker scout cves --only-severity critical,high app-convencional
+
+echo ""
+echo "📊 App Distroless:"
+docker scout cves --only-severity critical,high app-distroless
+
+echo ""
+echo "🔄 Comparação Direta:"
+echo "--------------------"
+docker scout compare app-convencional --to app-distroless
+
+echo ""
+echo "💡 Recomendações:"
+echo "----------------"
+docker scout recommendations app-convencional
+```
+
+### Integração com CI/CD
+
+```yaml
+# Exemplo para GitHub Actions
+name: Docker Scout Security Scan
+
+on: [push, pull_request]
+
+jobs:
+  scout-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t ${{ github.repository }}:${{ github.sha }} .
+
+      - name: Docker Scout scan
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: ${{ github.repository }}:${{ github.sha }}
+          only-severities: critical,high
+          exit-code: true
+```
+
+### Resultados Esperados
+
+Com base nos testes com Trivy, esperamos que o Docker Scout confirme:
+
+| Imagem               | Vulnerabilidades Scout | Recomendações                 |
+| -------------------- | ---------------------- | ----------------------------- |
+| **app-convencional** | ~50+ vulnerabilidades  | Migrar para imagem distroless |
+| **app-distroless**   | 0-2 vulnerabilidades   | Manter atualizada             |
+| **app-melange**      | 0 vulnerabilidades     | Configuração ideal ✅         |
+
+### Comandos de Teste Rápido
+
+```bash
+# Teste rápido de todas as imagens
+for image in app-convencional app-distroless app-melange; do
+  echo "=== Analisando $image ==="
+  docker scout cves --only-severity critical,high $image
+  echo ""
+done
+
+# Comparação em cadeia
+docker scout compare app-convencional --to app-distroless --to app-melange
+```
+
+---
+
 ## 📦 Exemplos Prontos para Uso
+
+### Script de Análise de Segurança Completa
+
+Execute o script `security-analysis.sh` para análise completa com Trivy e Docker Scout:
+
+```bash
+# Tornar executável e executar
+chmod +x security-analysis.sh
+./security-analysis.sh
+```
 
 ### Script de Comparação Automática
 
@@ -339,10 +515,23 @@ docker images | grep app-
 
 ## 📚 Recursos Adicionais
 
+### Ferramentas de Segurança
+
+- [Trivy Documentation](https://trivy.dev/)
+- [Docker Scout Documentation](https://docs.docker.com/scout/)
+- [Docker Scout CLI](https://github.com/docker/scout-cli)
+
+### Tecnologias Utilizadas
+
 - [Documentação Chainguard](https://edu.chainguard.dev/)
 - [Melange Documentation](https://github.com/chainguard-dev/melange)
 - [Apko Documentation](https://github.com/chainguard-dev/apko)
 - [Distroless Best Practices](https://github.com/GoogleContainerTools/distroless)
+
+### Scripts de Automação
+
+- `security-analysis.sh` - Análise completa com Trivy e Docker Scout
+- `compare-all.sh` - Comparação automatizada das três abordagens
 
 ---
 
