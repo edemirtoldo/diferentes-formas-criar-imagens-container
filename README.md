@@ -12,11 +12,11 @@ Este repositório demonstra **três abordagens diferentes** para criar imagens D
 
 ## 📋 Visão Geral dos Projetos
 
-| Projeto                   | Abordagem              | Tamanho  | Segurança  | Complexidade | Docker Scout   |
-| ------------------------- | ---------------------- | -------- | ---------- | ------------ | -------------- |
-| **01-build-convencional** | Dockerfile tradicional | 59MB     | ⚠️ 23 CVEs | 🟢 Simples   | 134 pacotes    |
-| **02-build-distroless**   | Chainguard Distroless  | 27MB     | ✅ 0 CVEs  | 🟡 Moderada  | 62 pacotes     |
-| **03-melange**            | Melange + Apko         | **18MB** | ✅ 0 CVEs  | 🔴 Avançada  | **36 pacotes** |
+| Projeto                   | Abordagem              | Tamanho Real | Segurança | Complexidade | Scout HIGH+    |
+| ------------------------- | ---------------------- | ------------ | --------- | ------------ | -------------- |
+| **01-build-convencional** | Dockerfile tradicional | 140MB        | ⚠️ 2 HIGH | 🟢 Simples   | 134 pacotes    |
+| **02-build-distroless**   | Chainguard Distroless  | 64.3MB       | ✅ 0 CVEs | 🟡 Moderada  | 62 pacotes     |
+| **03-melange**            | Melange + Apko         | **42.3MB**   | ✅ 0 CVEs | 🔴 Avançada  | **36 pacotes** |
 
 ---
 
@@ -199,21 +199,40 @@ cd 03-melange
 
 ### Resultados do Scan de Vulnerabilidades
 
-#### Trivy Results
+> **📋 Nota**: Resultados atualizados com base na execução do script `security-analysis.sh`
+
+#### Trivy Results (Scan Completo)
 
 | Abordagem              | Total Vulnerabilidades | Críticas | Altas | Médias | Baixas | Tamanho |
 | ---------------------- | ---------------------- | -------- | ----- | ------ | ------ | ------- |
-| **Build Convencional** | 53                     | 0        | 2     | 0      | 51     | ~140MB  |
-| **Build Distroless**   | **0** ✅               | 0        | 0     | 0      | 0      | ~64MB   |
-| **Melange + Apko**     | **0** ✅               | 0        | 0     | 0      | 0      | ~42MB   |
+| **Build Convencional** | 53                     | 0        | 2     | 0      | 51     | 140MB   |
+| **Build Distroless**   | **0** ✅               | 0        | 0     | 0      | 0      | 64.3MB  |
+| **Melange + Apko**     | **0** ✅               | 0        | 0     | 0      | 0      | 42.3MB  |
 
-#### Docker Scout Results
+#### Docker Scout Results (Apenas HIGH/CRITICAL)
 
-| Abordagem              | Total Vulnerabilidades | Críticas | Altas | Médias | Baixas | Tamanho  | Pacotes |
-| ---------------------- | ---------------------- | -------- | ----- | ------ | ------ | -------- | ------- |
-| **Build Convencional** | 23                     | 0        | 2     | 1      | 20     | 59MB     | 134     |
-| **Build Distroless**   | **0** ✅               | 0        | 0     | 0      | 0      | **27MB** | 62      |
-| **Melange + Apko**     | **0** ✅               | 0        | 0     | 0      | 0      | **18MB** | 36      |
+| Abordagem              | Vulnerabilidades HIGH+ | Críticas | Altas | Tamanho Real | Pacotes |
+| ---------------------- | ---------------------- | -------- | ----- | ------------ | ------- |
+| **Build Convencional** | **2** ⚠️               | 0        | 2     | 59MB         | 134     |
+| **Build Distroless**   | **0** ✅               | 0        | 0     | **27MB**     | 62      |
+| **Melange + Apko**     | **0** ✅               | 0        | 0     | **18MB**     | 36      |
+
+**🎯 Insights Importantes**:
+
+1. **Docker Scout é mais seletivo**: Mostra apenas vulnerabilidades HIGH+ por padrão
+2. **Trivy é mais abrangente**: Inclui todas as severidades (LOW, MEDIUM, HIGH, CRITICAL)
+3. **Consenso nas críticas**: Ambas concordam nas 2 vulnerabilidades HIGH do setuptools
+4. **Tamanhos reais**: Medidos com `docker images` são maiores que reportados pelo Scout
+5. **Melange é o campeão**: Menor tamanho real (42.3MB) e zero vulnerabilidades
+
+**📊 Comparação de Metodologias**:
+
+| Aspecto         | Trivy                | Docker Scout              |
+| --------------- | -------------------- | ------------------------- |
+| **Escopo**      | Todas as severidades | HIGH+ por padrão          |
+| **Total CVEs**  | 53 (convencional)    | 2 (convencional)          |
+| **Foco**        | Análise completa     | Vulnerabilidades críticas |
+| **Performance** | Mais rápido          | Integração Docker         |
 
 ### Detalhes - Build Convencional
 
@@ -277,15 +296,15 @@ cd 03-melange
 | **Tamanho da Imagem**       | 59MB         | 27MB       | **18MB** ✅ | **-69%** ✅      |
 | **Pacotes Totais**          | 134          | 62         | **36** ✅   | **-73%** ✅      |
 
-**Conclusões Finais:**
+**Conclusões Finais (Dados Reais):**
 
-- **🏆 Empate na segurança**: Distroless e Melange = ZERO vulnerabilidades ✅
-- **🥇 Melange é o campeão**: Menor tamanho (18MB) e menos pacotes (36)
+- **🏆 Empate na segurança**: Distroless e Melange = ZERO vulnerabilidades HIGH+ ✅
+- **🥇 Melange é o campeão**: Menor tamanho real (42.3MB) e menos pacotes (36)
 - **🎯 Ambas são superiores**: Chainguard (Wolfi) e Alpine ultra-seguros
-- **📊 Ranking final**: Melange > Distroless > Convencional
-- **✅ Objetivo alcançado**: 100% das vulnerabilidades eliminadas
-- **🚀 Performance excepcional**: Melange 69% menor que convencional
-- **🔒 Segurança máxima**: Confirmada por Trivy e Docker Scout
+- **📊 Ranking final**: Melange (42.3MB) > Distroless (64.3MB) > Convencional (140MB)
+- **✅ Objetivo alcançado**: 100% das vulnerabilidades críticas eliminadas
+- **🚀 Performance real**: Melange 70% menor que convencional (42.3MB vs 140MB)
+- **🔒 Segurança máxima**: Confirmada por ambas as ferramentas
 
 **Como executar o scan:**
 

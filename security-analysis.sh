@@ -75,7 +75,7 @@ for image in "${IMAGES[@]}"; do
         echo -e "\n🚨 Vulnerabilidades CRÍTICAS e ALTAS:"
         trivy image --severity CRITICAL,HIGH --quiet "$image" || echo "✅ Nenhuma vulnerabilidade crítica/alta encontrada"
         
-        echo "$(printf '-%.0s' {1..50})"
+        echo "$(printf -- '-%.0s' {1..50})"
     else
         echo -e "${RED}❌ Imagem $image não encontrada${NC}"
     fi
@@ -93,7 +93,7 @@ if [ "$SCOUT_AVAILABLE" = true ]; then
             echo "📈 Vulnerabilidades encontradas:"
             docker scout cves --only-severity critical,high "$image" || echo "✅ Nenhuma vulnerabilidade crítica/alta encontrada"
             
-            echo "$(printf '-%.0s' {1..50})"
+            echo "$(printf -- '-%.0s' {1..50})"
         fi
     done
     
