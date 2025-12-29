@@ -29,7 +29,7 @@ Este repositório demonstra **três abordagens diferentes** para criar imagens D
 - [Docker Scout](https://docs.docker.com/scout/) (análise complementar)
 - [Melange](https://github.com/chainguard-dev/melange) e [Apko](https://github.com/chainguard-dev/apko) (apenas para abordagem 03)
 
-### Instalação Rápida das Ferramentas
+### Instalação Rápida das Ferramentas - 
 
 ```bash
 # Trivy - Linux/macOS
